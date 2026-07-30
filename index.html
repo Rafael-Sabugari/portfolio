@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rafael Sabugari — Desenvolvedor Salesforce</title>
+<meta name="description" content="Portfólio de Rafael Henrique Polizelo Sabugari, Desenvolvedor Salesforce Senior.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0B0F19;
+    --surface: #131A2B;
+    --surface-2: #1B2440;
+    --line: #2A3352;
+    --text: #E7EAF0;
+    --muted: #8791A8;
+    --amber: #F5A623;
+    --teal: #2DD4BF;
+    --amber-dim: rgba(245,166,35,0.14);
+    --teal-dim: rgba(45,212,191,0.14);
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Manrope', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--amber); color:#0B0F19; }
+  a{ color:inherit; }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  /* background texture: faint circuit-grid, like a Flow canvas */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 42px 42px;
+    pointer-events:none;
+    z-index:0;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 40%, transparent 90%);
+  }
+
+  .wrap{ max-width:920px; margin:0 auto; padding:0 24px; position:relative; z-index:1; }
+
+  /* NAV */
+  header.nav{
+    position:sticky; top:0; z-index:50;
+    backdrop-filter: blur(10px);
+    background:rgba(11,15,25,0.75);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:920px; margin:0 auto; padding:16px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{ font-family:'JetBrains Mono', monospace; font-weight:600; font-size:14px; letter-spacing:0.02em; }
+  .brand span{ color:var(--amber); }
+  nav.links{ display:flex; gap:26px; font-size:14px; }
+  nav.links a{
+    text-decoration:none; color:var(--muted); font-family:'JetBrains Mono', monospace;
+    font-size:13px; transition:color 0.2s;
+    position:relative;
+  }
+  nav.links a:hover{ color:var(--teal); }
+  .nav-toggle{ display:none; }
+
+  /* HERO */
+  .hero{ padding:96px 0 72px; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono', monospace; font-size:12.5px; color:var(--teal);
+    background:var(--teal-dim); border:1px solid rgba(45,212,191,0.3);
+    padding:6px 12px; border-radius:100px; margin-bottom:28px;
+  }
+  .eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 8px var(--teal); }
+
+  .code-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow: 0 20px 60px -20px rgba(0,0,0,0.6);
+  }
+  .code-card .titlebar{
+    display:flex; align-items:center; gap:8px;
+    padding:12px 16px;
+    background:var(--surface-2);
+    border-bottom:1px solid var(--line);
+  }
+  .titlebar .tb-dot{ width:10px; height:10px; border-radius:50%; }
+  .titlebar .tb-dot:nth-child(1){ background:#FF5F57; }
+  .titlebar .tb-dot:nth-child(2){ background:#FEBC2E; }
+  .titlebar .tb-dot:nth-child(3){ background:#28C840; }
+  .titlebar .filename{ margin-left:8px; font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted); }
+  .code-card pre{
+    margin:0; padding:26px 28px 30px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:14.5px; line-height:1.85;
+    overflow-x:auto;
+  }
+  .code-card code{ white-space:pre; }
+  .c-kw{ color:#C792EA; }
+  .c-type{ color:var(--teal); }
+  .c-str{ color:var(--amber); }
+  .c-prop{ color:#9AB6FF; }
+  .c-com{ color:var(--muted); font-style:italic; }
+  .c-punc{ color:#7C87A5; }
+
+  .hero-actions{ display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; }
+  .btn{
+    font-family:'JetBrains Mono', monospace; font-size:13px;
+    padding:11px 18px; border-radius:8px; text-decoration:none;
+    display:inline-flex; align-items:center; gap:8px;
+    border:1px solid var(--line);
+    transition: border-color .2s, transform .2s, background .2s;
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn-primary{ background:var(--amber); color:#0B0F19; border-color:var(--amber); font-weight:600; }
+  .btn-primary:hover{ background:#ffb64a; }
+  .btn-ghost{ color:var(--text); }
+  .btn-ghost:hover{ border-color:var(--teal); color:var(--teal); }
+
+  /* SECTION HEADERS */
+  section{ padding:64px 0; border-top:1px solid var(--line); }
+  .sec-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:36px; }
+  .sec-num{ font-family:'JetBrains Mono', monospace; color:var(--amber); font-size:13px; }
+  h2{ font-size:26px; margin:0; font-weight:800; letter-spacing:-0.01em; }
+  .sec-sub{ color:var(--muted); font-size:15px; margin-top:6px; }
+
+  /* ABOUT */
+  .about p{ font-size:16.5px; color:#D3D7E2; max-width:64ch; }
+  .about strong{ color:var(--text); font-weight:700; }
+
+  /* SKILLS */
+  .skill-groups{ display:grid; grid-template-columns:1fr; gap:24px; }
+  .skill-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 24px;
+  }
+  .skill-card h3{
+    font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:600;
+    color:var(--teal); text-transform:uppercase; letter-spacing:0.06em; margin:0 0 16px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .skill-card h3::before{ content:"//"; color:var(--muted); }
+  .pills{ display:flex; flex-wrap:wrap; gap:9px; }
+  .pill{
+    font-family:'JetBrains Mono', monospace; font-size:12.5px;
+    background:var(--surface-2); border:1px solid var(--line); color:#D3D7E2;
+    padding:6px 12px; border-radius:6px;
+  }
+  .pill.cert{ border-color:rgba(245,166,35,0.4); color:var(--amber); background:var(--amber-dim); }
+
+  /* EXPERIENCE — FLOW TIMELINE */
+  .flow{ position:relative; padding-left:34px; }
+  .flow::before{
+    content:""; position:absolute; left:9px; top:6px; bottom:6px; width:2px;
+    background:linear-gradient(var(--amber), var(--teal), var(--line));
+    opacity:0.5;
+  }
+  .role{ position:relative; margin-bottom:44px; }
+  .role:last-child{ margin-bottom:0; }
+  .role-node{
+    position:absolute; left:-34px; top:2px;
+    width:20px; height:20px;
+    background:var(--bg); border:2px solid var(--amber);
+    transform:rotate(45deg);
+    border-radius:4px;
+  }
+  .role-head{ margin-bottom:4px; }
+  .role-head .company{ font-size:19px; font-weight:800; }
+  .role-head .title{ color:var(--teal); font-family:'JetBrains Mono', monospace; font-size:13.5px; margin-top:2px; }
+  .role-meta{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted);
+    margin-top:6px; display:flex; gap:14px; flex-wrap:wrap;
+  }
+
+  .projects{ margin-top:20px; display:flex; flex-direction:column; gap:12px; }
+  .project{
+    background:var(--surface); border:1px solid var(--line); border-radius:8px;
+    position:relative;
+  }
+  .project::before{
+    content:""; position:absolute; left:-19px; top:18px;
+    width:12px; height:2px; background:var(--line);
+  }
+  .project summary{
+    list-style:none; cursor:pointer; padding:14px 18px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .project summary::-webkit-details-marker{ display:none; }
+  .project summary .p-name{ font-weight:700; font-size:14.5px; }
+  .project summary .p-name .p-tag{
+    font-family:'JetBrains Mono', monospace; font-weight:400; font-size:11.5px;
+    color:var(--muted); margin-left:8px;
+  }
+  .project summary .chev{
+    font-family:'JetBrains Mono', monospace; color:var(--muted); font-size:13px;
+    transition:transform 0.2s;
+  }
+  .project[open] summary .chev{ transform:rotate(90deg); }
+  .project ul{ margin:0; padding:0 20px 18px 36px; color:#C7CCDB; font-size:14px; }
+  .project li{ margin-bottom:7px; }
+  .project li:last-child{ margin-bottom:0; }
+
+  /* EDUCATION */
+  .edu-list{ display:flex; flex-direction:column; gap:16px; }
+  .edu-item{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:16px;
+    padding:18px 20px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  }
+  .edu-item .school{ font-weight:700; font-size:15px; }
+  .edu-item .course{ color:var(--muted); font-size:13.5px; margin-top:3px; }
+  .edu-item .place{ color:var(--muted); font-size:12.5px; margin-top:6px; font-family:'JetBrains Mono', monospace; }
+  .edu-item .period{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--teal);
+    white-space:nowrap; padding-top:2px;
+  }
+
+  /* FOOTER */
+  footer{ padding:64px 0 48px; border-top:1px solid var(--line); }
+  .contact-card{
+    background:linear-gradient(135deg, var(--surface), var(--surface-2));
+    border:1px solid var(--line); border-radius:var(--radius);
+    padding:40px; text-align:center;
+  }
+  .contact-card h2{ margin-bottom:10px; }
+  .contact-card p{ color:var(--muted); margin:0 0 26px; }
+  .contact-links{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .foot-note{ text-align:center; color:var(--muted); font-size:12.5px; margin-top:36px; font-family:'JetBrains Mono', monospace; }
+
+  @media (min-width:720px){
+    .skill-groups{ grid-template-columns: 1fr 1fr; }
+    .skill-card:first-child{ grid-column:1 / -1; }
+  }
+
+  @media (max-width:640px){
+    nav.links{ display:none; }
+    .hero{ padding:64px 0 48px; }
+    .code-card pre{ font-size:12.5px; padding:20px; }
+    h2{ font-size:22px; }
+    .role-head .company{ font-size:17px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">rafael<span>.</span>sabugari</div>
+    <nav class="links">
+      <a href="#sobre">sobre</a>
+      <a href="#skills">skills</a>
+      <a href="#experiencia">experiência</a>
+      <a href="#educacao">educação</a>
+      <a href="#contato">contato</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero" id="topo">
+    <span class="eyebrow"><span class="dot"></span>disponível para novos projetos</span>
+
+    <div class="code-card">
+      <div class="titlebar">
+        <span class="tb-dot"></span><span class="tb-dot"></span><span class="tb-dot"></span>
+        <span class="filename">RafaelSabugari.cls</span>
+      </div>
+      <pre><code><span class="c-kw">public class</span> <span class="c-type">RafaelSabugari</span> <span class="c-kw">implements</span> <span class="c-type">SalesforceDeveloper</span> <span class="c-punc">{</span>
+
+    <span class="c-kw">public</span> <span class="c-type">String</span> nomeCompleto <span class="c-punc">=</span> <span class="c-str">'Rafael Henrique Polizelo Sabugari'</span><span class="c-punc">;</span>
+    <span class="c-kw">public</span> <span class="c-type">String</span> cargo        <span class="c-punc">=</span> <span class="c-str">'Desenvolvedor Salesforce Senior'</span><span class="c-punc">;</span>
+    <span class="c-kw">public</span> <span class="c-type">Integer</span> anosDeExperiencia <span class="c-punc">=</span> <span class="c-str">4</span><span class="c-punc">;</span>
+    <span class="c-kw">public</span> <span class="c-type">List&lt;String&gt;</span> certificacoes <span class="c-punc">=</span> <span class="c-kw">new</span> <span class="c-type">List&lt;String&gt;</span><span class="c-punc">{</span><span class="c-str">'Associate'</span><span class="c-punc">,</span> <span class="c-str">'Platform Developer I'</span><span class="c-punc">};</span>
+
+    <span class="c-com">// Apex, LWC, Aura, Flow, Integrações — do requisito ao deploy.</span>
+    <span class="c-kw">public</span> <span class="c-type">void</span> <span class="c-prop">resolveProblemaDeNegocio</span><span class="c-punc">()</span> <span class="c-punc">{</span>
+        System.debug<span class="c-punc">(</span><span class="c-str">'bora construir.'</span><span class="c-punc">);</span>
+    <span class="c-punc">}</span>
+<span class="c-punc">}</span></code></pre>
+    </div>
+
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="mailto:rafaelpolizelo@gmail.com">enviar e-mail</a>
+      <a class="btn btn-ghost" href="https://linkedin.com/in/rafaelsabugari" target="_blank" rel="noopener">linkedin ↗</a>
+      <a class="btn btn-ghost" href="https://salesforce.com/rsabugari" target="_blank" rel="noopener">trailblazer ↗</a>
+      <a class="btn btn-ghost" href="tel:+5517982194747">+55 17 98219-4747</a>
+    </div>
+  </section>
+
+  <section id="sobre">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <div>
+        <h2>Sobre</h2>
+      </div>
+    </div>
+    <div class="about">
+      <p>
+        Desenvolvedor Salesforce com <strong>mais de 4 anos de experiência</strong> construindo automações,
+        integrações e experiências de usuário dentro do ecossistema Salesforce — de <strong>Flows</strong> complexos
+        com telas em <strong>LWC</strong> a integrações <strong>REST</strong> com sistemas como SAP. Já atuou em
+        projetos de setores como financeiro, agronegócio e biotecnologia, sempre com foco em CI/CD, cobertura de
+        testes e código sustentável.
+      </p>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <div>
+        <h2>Habilidades técnicas</h2>
+        <div class="sec-sub">Certificações, linguagens e tecnologias do dia a dia.</div>
+      </div>
+    </div>
+
+    <div class="skill-groups">
+      <div class="skill-card">
+        <h3>Certificações Salesforce</h3>
+        <div class="pills">
+          <span class="pill cert">Salesforce Certified Associate</span>
+          <span class="pill cert">Platform Developer I</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <h3>Linguagens</h3>
+        <div class="pills">
+          <span class="pill">Apex</span>
+          <span class="pill">SOQL</span>
+          <span class="pill">SOSL</span>
+          <span class="pill">SQL</span>
+          <span class="pill">JavaScript</span>
+          <span class="pill">HTML</span>
+          <span class="pill">CSS</span>
+          <span class="pill">Python</span>
+          <span class="pill">Java</span>
+          <span class="pill">C</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <h3>Tecnologias &amp; plataformas</h3>
+        <div class="pills">
+          <span class="pill">Sales Cloud</span>
+          <span class="pill">Lightning Web Components</span>
+          <span class="pill">Aura Components</span>
+          <span class="pill">Visualforce</span>
+          <span class="pill">Salesforce DX</span>
+          <span class="pill">Flows</span>
+          <span class="pill">Batch / Scheduled Apex</span>
+          <span class="pill">Workflows</span>
+          <span class="pill">Approval Processes</span>
+          <span class="pill">Validation Rules</span>
+          <span class="pill">Triggers</span>
+          <span class="pill">RESTful API</span>
+          <span class="pill">Named Credentials</span>
+          <span class="pill">Flow External Services</span>
+          <span class="pill">Custom Settings</span>
+          <span class="pill">Custom Metadata</span>
+          <span class="pill">BitBucket</span>
+          <span class="pill">GitHub Enterprise</span>
+          <span class="pill">Flosum</span>
+          <span class="pill">Cordova</span>
+          <span class="pill">React Native</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experiencia">
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <div>
+        <h2>Experiência</h2>
+        <div class="sec-sub">Cada cargo é um elemento no fluxo — cada projeto, um passo dentro dele.</div>
+      </div>
+    </div>
+
+    <div class="flow">
+
+      <div class="role">
+        <div class="role-node"></div>
+        <div class="role-head">
+          <div class="company">CI&amp;T</div>
+          <div class="title">Desenvolvedor Salesforce Senior</div>
+        </div>
+        <div class="role-meta"><span>Abr 2024 — Presente</span><span>Campinas, SP</span></div>
+
+        <div class="projects">
+          <details class="project" open>
+            <summary><span class="p-name">Itaú <span class="p-tag">Sales</span></span><span class="chev">▸</span></summary>
+            <ul>
+              <li>Criação de dois fluxos robustos de boletagem de contratos, com subfluxos e telas desenvolvidas em LWC e Flow, integrando processos de aprovação.</li>
+              <li>Desenvolvimento de relatórios customizados em LWC e relatórios padrão para análise detalhada de informações relevantes, aprimorando a visibilidade e a tomada de decisões.</li>
+              <li>Implementação de funcionalidades complexas dentro de fluxos, incluindo telas interativas em LWC e automações via Flow e Apex, melhorando a experiência do usuário e a eficiência do processo.</li>
+              <li>CI/CD usando GitHub e Flosum.</li>
+            </ul>
+          </details>
+        </div>
+      </div>
+
+      <div class="role">
+        <div class="role-node"></div>
+        <div class="role-head">
+          <div class="company">Globant</div>
+          <div class="title">Desenvolvedor Salesforce Ssr.</div>
+        </div>
+        <div class="role-meta"><span>Jan 2024 — Mar 2024</span><span>São Paulo, SP</span></div>
+
+        <div class="projects">
+          <details class="project">
+            <summary><span class="p-name">Lavoro Agro <span class="p-tag">Sales / Service</span></span><span class="chev">▸</span></summary>
+            <ul>
+              <li>Criação do fluxo de Registro de Conta com assinatura digital e várias consultas a APIs realizadas dentro do fluxo para preenchimento automático de campos.</li>
+              <li>Criação de uma tela de cotação utilizando LWC e Apex, com aplicação de descontos e acréscimos, visualização de aprovadores, adição de permuta e conversão em pedidos.</li>
+              <li>Desenvolvimento de um PDF usando Visualforce, exibindo as informações do registro de forma organizada e formatada.</li>
+              <li>Várias melhorias na tela de pedidos, tanto na versão web quanto no aplicativo offline construído em Cordova.</li>
+              <li>Implementação de regras de negócio usando Apex, Triggers, LWC, Aura Components e Batch Apex.</li>
+              <li>CI/CD usando Bitbucket.</li>
+            </ul>
+          </details>
+        </div>
+      </div>
+
+      <div class="role">
+        <div class="role-node"></div>
+        <div class="role-head">
+          <div class="company">Nescará</div>
+          <div class="title">Desenvolvedor Salesforce Pleno</div>
+        </div>
+        <div class="role-meta"><span>Mar 2022 — Dez 2023</span><span>São Paulo, SP</span></div>
+
+        <div class="projects">
+          <details class="project">
+            <summary><span class="p-name">Holambra <span class="p-tag">Sales</span></span><span class="chev">▸</span></summary>
+            <ul>
+              <li>Desenvolvimento de um PDF usando Visualforce, exibindo as informações do registro de forma organizada e formatada.</li>
+              <li>Desenvolvimento de novas funcionalidades utilizando Apex com REST API para integração de contas com o SAP.</li>
+              <li>CI/CD usando Bitbucket.</li>
+            </ul>
+          </details>
+
+          <details class="project">
+            <summary><span class="p-name">Lavoro Agro <span class="p-tag">Sales</span></span><span class="chev">▸</span></summary>
+            <ul>
+              <li>Manutenção e implantação de melhorias no aplicativo offline construído em Cordova.</li>
+              <li>Implementação de regras de negócio usando Apex, Triggers Apex, Triggers Flow, ScreenFlow, LWC, Aura Components e Batch Apex.</li>
+              <li>Aumento da cobertura de código por meio do desenvolvimento de classes de teste.</li>
+              <li>Manutenção e desenvolvimento de novas funcionalidades usando Apex Integration e REST API para integração de pedidos.</li>
+            </ul>
+          </details>
+
+          <details class="project">
+            <summary><span class="p-name">Ihara <span class="p-tag">Sales · biotecnologia agroquímica</span></span><span class="chev">▸</span></summary>
+            <ul>
+              <li>Implementação do fluxo de registro de eventos com check-in e check-out usando Aura Components.</li>
+              <li>Desenvolvimento do fluxo de limite de crédito envolvendo integrações com SAP, com questionário implementado em LWC e perguntas alocadas dinamicamente.</li>
+              <li>Design e desenvolvimento de PDFs usando Visualforce para exibir informações de eventos.</li>
+              <li>Administração de todas as versionagens dos projetos.</li>
+              <li>Implementação de regras de negócio usando Apex, Triggers, LWC, Aura Components e Batch Apex.</li>
+              <li>CI/CD usando Bitbucket.</li>
+            </ul>
+          </details>
+
+          <details class="project">
+            <summary><span class="p-name">Cotriba <span class="p-tag">Sales</span></span><span class="chev">▸</span></summary>
+            <ul>
+              <li>Aumento da cobertura de código por meio do desenvolvimento de classes de teste.</li>
+              <li>CI/CD usando Bitbucket.</li>
+            </ul>
+          </details>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="educacao">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <div>
+        <h2>Educação</h2>
+      </div>
+    </div>
+
+    <div class="edu-list">
+      <div class="edu-item">
+        <div>
+          <div class="school">FEI — Fundação Educacional Inaciana Padre Sabóia de Medeiros</div>
+          <div class="course">Bacharelado em Ciência da Computação</div>
+          <div class="place">São Bernardo do Campo, SP</div>
+        </div>
+        <div class="period">2023</div>
+      </div>
+
+      <div class="edu-item">
+        <div>
+          <div class="school">Plus Language School</div>
+          <div class="course">Curso de Inglês</div>
+          <div class="place">Santo André, SP</div>
+        </div>
+        <div class="period">2024 — Presente</div>
+      </div>
+
+      <div class="edu-item">
+        <div>
+          <div class="school">CCAA</div>
+          <div class="course">Curso de Inglês</div>
+          <div class="place">Jales, SP</div>
+        </div>
+        <div class="period">2017 — 2019</div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="contato">
+    <div class="contact-card">
+      <h2>Vamos conversar?</h2>
+      <p>Aberto a novos projetos e oportunidades na plataforma Salesforce.</p>
+      <div class="contact-links">
+        <a class="btn btn-primary" href="mailto:rafaelpolizelo@gmail.com">rafaelpolizelo@gmail.com</a>
+        <a class="btn btn-ghost" href="https://linkedin.com/in/rafaelsabugari" target="_blank" rel="noopener">LinkedIn ↗</a>
+        <a class="btn btn-ghost" href="https://salesforce.com/rsabugari" target="_blank" rel="noopener">Trailblazer ↗</a>
+        <a class="btn btn-ghost" href="tel:+5517982194747">+55 17 98219-4747</a>
+      </div>
+    </div>
+    <div class="foot-note">© <span id="year"></span> Rafael Sabugari — feito com HTML, CSS e um pouco de Apex no coração.</div>
+  </footer>
+
+</main>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
